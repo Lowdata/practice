@@ -1,130 +1,481 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Polity MCQ Practice – Day 1</title>
-  <style>
-    body { font-family: Arial, sans-serif; background:#f5f5f5; margin:0; padding:20px; }
-    h1,h2 { margin-bottom:10px; }
-    .container { max-width:900px; margin:auto; background:#fff; padding:20px; border-radius:6px; }
-    .topics button { margin:5px; padding:10px 15px; cursor:pointer; }
-    .question { margin:20px 0; }
-    .options label { display:block; margin:6px 0; cursor:pointer; }
-    .submit-btn { margin-top:15px; padding:10px 20px; }
-    .result { font-weight:bold; margin-top:20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polity Day 1: Constitution, Preamble & Union</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .question-card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-left: 5px solid #3498db;
+        }
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        .options-list li {
+            margin-bottom: 10px;
+        }
+        label {
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        input[type="radio"] {
+            margin-top: 5px;
+        }
+        .result-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e8f6f3;
+            border-radius: 8px;
+            display: none;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #219150;
+        }
+        /* Feedback styles */
+        .correct {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: #c0392b;
+            text-decoration: line-through;
+        }
+        .feedback {
+            margin-top: 10px;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-  <h1>Polity – Day 1 MCQ Practice</h1>
-  <p>Select a topic or go mixed. This is basic on purpose. No gimmicks.</p>
 
-  <div class="topics">
-    <h2>Choose Mode</h2>
-    <button onclick="loadTopic('constitution')">Making of Constitution</button>
-    <button onclick="loadTopic('preamble')">Preamble</button>
-    <button onclick="loadTopic('union')">Union & Territories</button>
-    <button onclick="loadTopic('mixed')">Mixed MCQs</button>
-  </div>
+<header>
+    <h1>Polity Day 1 Practice Test</h1>
+    <p>Topic: Making of the Constitution, Preamble, Union and its Territories</p>
+</header>
 
-  <div id="timer" style="font-weight:bold;">Time Left: --</div>
-  <div id="mcq-area"></div>
-  <button class="submit-btn" onclick="submitQuiz()">Submit</button>
-  <div id="result" class="result"></div>
+<div id="quiz-container">
+    </div>
+
+<button id="submit-btn" onclick="submitQuiz()">Submit Test</button>
+
+<div id="result" class="result-section">
+    <h2 id="score-display"></h2>
+    <p>Review your answers above.</p>
 </div>
 
 <script>
-const mcqs = {
-  constitution: [
-    { q: "In the context of a modern State, which best captures the essential character of a Constitution?", options: ["A detailed administrative rulebook prescribing day-to-day functioning","A set of fundamental principles defining the structure of the State","A compilation of ordinary laws easily changed","A political manifesto"], answer: 1 },
-    { q: "Regarding the need for a Constitution, which functions are correctly matched?", options: ["1 and 2 only","1, 2 and 4 only","2, 3 and 4 only","1, 3 and 4 only"], answer: 1 },
-    { q: "Formation of the Constituent Assembly: which statements are correct?", options: ["3 only","3 and 4 only","2 and 3 only","1, 2 and 4 only"], answer: 1 },
-    { q: "Correctly matched committees and chairpersons?", options: ["1 and 2 only","1, 2 and 3 only","1, 2, 3 and 4","2, 3 and 4 only"], answer: 2 },
-    { q: "Which statements about the Constituent Assembly are NOT correct?", options: ["1 and 2 only","2 and 3 only","1 and 3 only","1, 2 and 3"], answer: 0 },
-    { q: "Objectives of the Indian Constitution include which of the following?", options: ["1, 3 and 4 only","1 and 2 only","2, 3 and 4 only","1, 2, 3 and 4"], answer: 0 },
-    { q: "Written vs Unwritten Constitution: correct distinction?", options: ["1, 2 and 3 only","1, 2 and 4 only","1 and 3 only","1, 2, 3 and 4"], answer: 3 },
-    { q: "A de-merit of an unwritten Constitution is:", options: ["Excessive rigidity","Uncertainty due to lack of codification","Easy amendment","Bulkiness"], answer: 1 },
-    { q: "Composition of Constituent Assembly (2024): how many statements are correct?", options: ["Only one","Only two","All three","None"], answer: 1 },
-    { q: "Who was the Provisional President of the Constituent Assembly?", options: ["C. Rajagopalachari","Dr. B.R. Ambedkar","T.T. Krishnamachari","Dr. Sachidananda Sinha"], answer: 3 },
-    { q: "Constitution Day statements – correct option?", options: ["Both correct, II explains I","Both correct, II doesn't explain I","I correct, II incorrect","I incorrect, II correct"], answer: 2 },
-    { q: "Members of the Constituent Assembly from Provinces were:", options: ["Directly elected","Nominated by Governor","Elected by Provincial Assemblies","Nominated by INC"], answer: 2 }
-  ],
-  preamble: [
-    { q: "The Preamble to the Constitution of India is:", options: ["Part but no legal effect","Not part and no legal effect","Part with same legal effect","Part but no legal effect either"], answer: 0 },
-    { q: "Which objective is NOT in the Preamble?", options: ["Liberty of thought","Economic liberty","Liberty of expression","Liberty of belief, faith and worship"], answer: 1 },
-    { q: "Constitutional status of India on 26 January 1950 was:", options: ["Democratic Republic","Sovereign Democratic Republic","Sovereign Secular Democratic","Sovereign Socialist Secular Democratic Republic"], answer: 1 },
-    { q: "Liberty, Equality, Fraternity are inspired from which revolution?", options: ["Russian","Chinese","French","American"], answer: 2 },
-    { q: "Promotion of international peace is included in:", options: ["Preamble","DPSP","Fundamental Duties","Ninth Schedule"], answer: 1 },
-    { q: "The term 'Secular' in the Preamble implies:", options: ["Absence of religion","Equal treatment of all religions","State control of religion","Promotion of atheism"], answer: 1 },
-    { q: "Statements regarding the Preamble: how many are correct?", options: ["Only one","Only two","Only three","All four"], answer: 1 },
-    { q: "Sovereignty: which statements are NOT correct?", options: ["1 only","2 only","1 and 3 only","2 and 3 only"], answer: 1 },
-    { q: "Sovereignty (repeat): which statements are NOT correct?", options: ["1 only","2 only","1 and 3 only","2 and 3 only"], answer: 1 }
-  ],
-  union: [
-    { q: "Article 1 describes India as:", options: ["Federation of States","Confederation","Union of States","Association"], answer: 2 },
-    { q: "Why did Ambedkar prefer 'Union of States'?", options: ["Historical reasons","Mutual agreement","Indestructibility, no secession","State autonomy"], answer: 2 },
-    { q: "Article 3 authorises Parliament to:", options: ["1, 2 and 3 only","3 and 4 only","3 only","1, 2, 3 and 4"], answer: 0 },
-    { q: "Union of India vs Territory of India:", options: ["Only 1 correct","Only 2 correct","Both correct","Neither correct"], answer: 3 },
-    { q: "Which statement is correct?", options: ["Territory consists only of states and UTs","Federal units enjoy equal powers","Article 368 required to cede territory","Political map can be redrawn by Union"], answer: 2 },
-    { q: "State reorganisation statements: how many are correct?", options: ["Only one","Only two","Only three","All four"], answer: 1 },
-    { q: "Alteration of state boundaries – which is correct?", options: ["Only 1","Only 2","Both 1 and 2","Neither 1 nor 2"], answer: 0 },
-    { q: "Correct chronological order of full statehood:", options: ["Sikkim-Arunachal-Nagaland-Haryana","Nagaland-Haryana-Sikkim-Arunachal","Sikkim-Haryana-Nagaland-Arunachal","Nagaland-Arunachal-Sikkim-Haryana"], answer: 1 }
-  ]
-};
+    // Data extracted from the PDF [cite: 1-249]
+    const quizData = [
+        {
+            q: "Q1. In the context of a modern State, which of the following best captures the essential character of a Constitution?",
+            options: [
+                "a. A detailed administrative rulebook prescribing day-to-day functioning of all government offices.",
+                "b. A set of fundamental principles, basic rules and established precedents that define the structure of the State and regulate its key aspects.",
+                "c. A compilation of ordinary laws passed by the legislature, which can be easily changed by a simple majority.",
+                "d. A political manifesto issued by the ruling party to guide its policies during its term."
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q2. Regarding the need for a Constitution, which of the following sets of functions is correctly matched with the role of a Constitution?<br>1. Providing a basis for governance<br>2. Enabling minimal coordination in society through public rules<br>3. Ensuring unlimited powers to the government to maintain order<br>4. Laying down limitations on governmental powers",
+            options: [
+                "a. 1 and 2 only",
+                "b. 1, 2 and 4 only",
+                "c. 2, 3 and 4 only",
+                "d. 1, 3 and 4 only"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q3. Concerning the formation of the Constituent Assembly of India, which of the following statements is/are correct?<br>1. The Constituent Assembly was created exactly in the form originally suggested by the Cabinet Mission, without later changes.<br>2. Members of the Constituent Assembly were chosen solely through direct adult franchise.<br>3. The initial scheme envisaged a Constituent Assembly of 389 members.<br>4. After Partition, the reconstituted Assembly had 299 members, of which 229 were elected by provincial assemblies.",
+            options: [
+                "a. 3 only",
+                "b. 3 and 4 only",
+                "c. 2 and 3 only",
+                "d. 1, 2 and 4 only"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q4. Regarding the working of India's Constituent Assembly, which of the following pairs is/are correctly matched?<br>1. Union Powers Committee - Jawaharlal Nehru<br>2. Advisory Committee on Fundamental Rights - Sardar Vallabhbhai Patel<br>3. Drafting Committee - Dr. B.R. Ambedkar<br>4. Committee on Rules of Procedure - Dr. Rajendra Prasad",
+            options: [
+                "a. 1 and 2 only",
+                "b. 1, 2 and 3 only",
+                "c. 1, 2, 3 and 4",
+                "d. 2, 3 and 4 only"
+            ],
+            ans: 2 // c
+        },
+        {
+            q: "Q5. Consider the following statements regarding the Constituent Assembly of India:<br>1. It was represented adequately by all the major political parties of that time.<br>2. The members of the Constituent Assembly were elected after India's Independence.<br>3. The Constituent Assembly was numerically dominated by legal professionals.<br>Which of the above statements is/are NOT correct?",
+            options: [
+                "a. 1 and 2 only",
+                "b. 2 and 3 only",
+                "c. 1 and 3 only",
+                "d. 1, 2 and 3"
+            ],
+            ans: 0 // a
+        },
+        {
+            q: "Q6. Consider the following provisions as forming part of the objectives of the Indian Constitution:<br>1. Defining the territories that India will comprise<br>2. Enacting ordinary criminal laws such as the Indian Penal Code<br>3. Laying down Fundamental Rights and Directive Principles of State Policy<br>4. Providing the structure and functioning of governments at Union, State and local levels<br>Which of the above is/are correct?",
+            options: [
+                "a. 1, 3 and 4 only",
+                "b. 1 and 2 only",
+                "c. 2, 3 and 4 only",
+                "d. 1, 2, 3 and 4"
+            ],
+            ans: 0 // a
+        },
+        {
+            q: "Q7. Which of the following accurately distinguishes a written Constitution from an unwritten Constitution?<br>1. Form: Single document vs Multiple sources<br>2. Amendment: Rigid process vs Flexible evolution<br>3. Clarity: High vs Low<br>4. Examples: India/France vs UK/New Zealand",
+            options: [
+                "a. 1, 2 and 3 only",
+                "b. 1, 2 and 4 only",
+                "c. 1 and 3 only",
+                "d. 1, 2, 3 and 4 only"
+            ],
+            ans: 3 // d
+        },
+        {
+            q: "Q8. In the context of de-merits of an unwritten Constitution, which of the following statements is correct?",
+            options: [
+                "a. It provides excessive rigidity, making governance unresponsive to changing needs.",
+                "b. Uncertainty arises because rules are not codified, leading to frequent judicial interventions for clarification.",
+                "c. It is prone to easy amendments by simple majority, undermining stability.",
+                "d. Prominent examples include Japan and Canada, which face issues due to its bulkiness"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q9. With reference to the composition of India's Constituent Assembly (2024), consider the following:<br>1. It was constituted in November 1946 under the scheme formulated by the Cabinet Mission Plan.<br>2. It was a partly elected and partly nominated body.<br>3. For protecting minority interests, there was a system of separate electorates for elections to it.<br>How many of the above statements are correct?",
+            options: [
+                "a. Only one",
+                "b. Only two",
+                "c. All three",
+                "d. None"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q10. Who was the Provisional President of the Constituent Assembly before Dr. Rajendra Prasad took over?",
+            options: [
+                "a. C. Rajagopalachari",
+                "b. Dr. BR Ambedkar",
+                "c. TT Krishnamachari",
+                "d. Dr. Sachidananda Sinha"
+            ],
+            ans: 3 // d
+        },
+        {
+            q: "Q11. Consider the following statements in respect of the Constitution Day (2023):<br>Statement-I: Celebrated on 26th November to promote constitutional values.<br>Statement-II: On 26th November 1949, the Assembly set up the Drafting Committee under Dr. B.R. Ambedkar.",
+            options: [
+                "a. Both correct, II explains I",
+                "b. Both correct, II doesn't explain I",
+                "c. I correct, II incorrect",
+                "d. I incorrect, II correct"
+            ],
+            ans: 2 // c
+        },
+        {
+            q: "Q12. With reference to Indian history, the members of the Constituent Assembly from the Provinces were (2013):",
+            options: [
+                "a. Directly elected by people",
+                "b. Nominated by Governor",
+                "c. Elected by Provincial Assemblies",
+                "d. Nominated by Indian National Congress"
+            ],
+            ans: 2 // c
+        },
+        {
+            q: "Q13. The Preamble to the Constitution of India is (2020):",
+            options: [
+                "a. a part of the Constitution but has no legal effect",
+                "b. not a part of the Constitution and has no legal effect either",
+                "c. a part of the Constitution and has the same legal effect as any other part",
+                "d. a part of the Constitution but has no legal effect either"
+            ],
+            ans: 0 // a (Based on Source 231)
+        },
+        {
+            q: "Q14. Which one of the following objectives is not embodied in the Preamble to the Constitution of India? (2017)",
+            options: [
+                "a. Liberty of thought",
+                "b. Economic liberty",
+                "c. Liberty of expression",
+                "d. Liberty of belief, faith and worship"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q15. What was the exact constitutional status of India on 26 January 1950? (2021)",
+            options: [
+                "a. Democratic Republic",
+                "b. Sovereign Democratic Republic",
+                "c. Sovereign Secular Democratic",
+                "d. Sovereign Socialist Secular Democratic Republic"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q16. The terms Liberty, Equality and Fraternity used in the Preamble is inspired from which revolution? (HCS 2021)",
+            options: [
+                "a. Russian",
+                "b. Chinese",
+                "c. French",
+                "d. American"
+            ],
+            ans: 2 // c
+        },
+        {
+            q: "Q17. In the Constitution of India, promotion of international peace and security is included in the:",
+            options: [
+                "a. Preamble to the Constitution",
+                "b. Directive Principles of State Policy",
+                "c. Fundamental Duties",
+                "d. Ninth Schedule"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q18. The term 'Secular' in the Preamble implies:",
+            options: [
+                "a. Absence of religion",
+                "b. Equal treatment of all religions",
+                "c. State control over religious institutions",
+                "d. Promotion of atheism"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q19. The term 'Secular' in the Preamble implies: (Repeated Question)",
+            options: [
+                "a. Absence of religion",
+                "b. Equal treatment of all religions",
+                "c. State control over religious institutions",
+                "d. Promotion of atheism"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q20. Consider the following statements regarding the preamble:<br>1. Based on Objectives Resolution<br>2. Key to unravel minds of makers<br>3. Not considered part of Constitution<br>4. SC opined preamble can be utilised to interpret provisions<br>How many are correct?",
+            options: [
+                "a. Only one",
+                "b. Only two",
+                "c. Only three",
+                "d. All four"
+            ],
+            ans: 1 // b (Source 238)
+        },
+        {
+            q: "Q21. Consider the following statements about Sovereignty:<br>1. India is internally all-powerful and externally free.<br>2. Membership in Commonwealth limits sovereign status.<br>3. India can acquire foreign territory or cede its own.<br>Which are NOT correct?",
+            options: [
+                "a. 1 only",
+                "b. 2 only",
+                "c. 1 and 3 only",
+                "d. 2 and 3 only"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q22. Consider the following statements about Sovereignty: (Repeated Question)<br>1. India is internally all-powerful and externally free.<br>2. Membership in Commonwealth limits sovereign status.<br>3. India can acquire foreign territory or cede its own.<br>Which are NOT correct?",
+            options: [
+                "a. 1 only",
+                "b. 2 only",
+                "c. 1 and 3 only",
+                "d. 2 and 3 only"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q23. What does Article 1 of the Indian Constitution describe India as?",
+            options: [
+                "a. Federation of States",
+                "b. Confederation",
+                "c. Union of States",
+                "d. Association"
+            ],
+            ans: 2 // c
+        },
+        {
+            q: "Q24. Why did Dr. B.R. Ambedkar prefer 'Union of States' over 'Federation'?",
+            options: [
+                "a. Historical reasons",
+                "b. Mutual agreement",
+                "c. Indestructibility, no secession",
+                "d. State autonomy"
+            ],
+            ans: 2 // c
+        },
+        {
+            q: "Q25. Article 3 authorises the Parliament to:<br>1. Form a new state<br>2. Increase or diminish area<br>3. Alter the name<br>4. Transfer territory to foreign country<br>Which are correct?",
+            options: [
+                "a. 1, 2 & 3 only",
+                "b. 3 & 4 only",
+                "c. 3 only",
+                "d. 1, 2, 3 & 4"
+            ],
+            ans: 0 // a
+        },
+        {
+            q: "Q26. Consider the following statements:<br>1. Union of India is a wider expression than the Territory of India.<br>2. Union of India includes states, UTs and acquired territories.<br>Which are correct?",
+            options: [
+                "a. Only 1",
+                "b. Only 2",
+                "c. Both 1 & 2",
+                "d. Neither 1 nor 2"
+            ],
+            ans: 3 // d
+        },
+        {
+            q: "Q27. Which of the following statement is correct?",
+            options: [
+                "a. The territory of India shall consist of the states and UTs only.",
+                "b. Federal units enjoy equal powers and privileges.",
+                "c. Constitutional amendment is required under Article 368 for ceding a territory of India.",
+                "d. The political map of India can be redrawn by the union government."
+            ],
+            ans: 2 // c
+        },
+        {
+            q: "Q28. Consider the following:<br>1. State Legislatures can bifurcate themselves.<br>2. India currently has 28 States and 8 UTs.<br>3. State Re-organisation Commission 1953 headed by Fazal Ali.<br>4. Dhar Commission accepted linguistic basis.<br>How many are correct?",
+            options: [
+                "a. Only one",
+                "b. Only two",
+                "c. Only three",
+                "d. All four"
+            ],
+            ans: 1 // b
+        },
+        {
+            q: "Q29. Consider the following:<br>1. Parliament can alter boundaries of any existing State.<br>2. Bill for this can be introduced only in Rajya Sabha on President's recommendation.<br>Which are correct?",
+            options: [
+                "a. Only 1",
+                "b. Only 2",
+                "c. Both 1 and 2",
+                "d. Neither 1 nor 2"
+            ],
+            ans: 0 // a
+        },
+        {
+            q: "Q30. Which is correct chronological order of full statehood? (HCS 2021)",
+            options: [
+                "a. Sikkim-Arunachal Pradesh-Nagaland-Haryana",
+                "b. Nagaland-Haryana-Sikkim-Arunachal Pradesh",
+                "c. Sikkim-Haryana-Nagaland-Arunachal Pradesh",
+                "d. Nagaland-Arunachal Pradesh-Sikkim-Haryana"
+            ],
+            ans: 1 // b
+        }
+    ];
 
-let currentQuiz = [];
-let timeLeft = 0;
-let timerInterval = null;
+    function loadQuiz() {
+        const container = document.getElementById('quiz-container');
+        quizData.forEach((item, index) => {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            
+            let optionsHtml = '';
+            item.options.forEach((opt, optIndex) => {
+                optionsHtml += `
+                    <li>
+                        <label>
+                            <input type="radio" name="q${index}" value="${optIndex}">
+                            <span>${opt}</span>
+                        </label>
+                    </li>
+                `;
+            });
 
-function startTimer(seconds) {
-  clearInterval(timerInterval);
-  timeLeft = seconds;
-  document.getElementById('timer').innerText = `Time Left: ${timeLeft}s`;
-  timerInterval = setInterval(() => {
-    timeLeft--;
-    document.getElementById('timer').innerText = `Time Left: ${timeLeft}s`;
-    if (timeLeft <= 0) {
-      clearInterval(timerInterval);
-      submitQuiz();
+            card.innerHTML = `
+                <div class="question-text">${item.q}</div>
+                <ul class="options-list">${optionsHtml}</ul>
+                <div id="feedback-${index}" class="feedback"></div>
+            `;
+            container.appendChild(card);
+        });
     }
-  }, 1000);
-}
 
-function loadTopic(topic) {
-  document.getElementById('result').innerText = '';
-  if (topic === 'mixed') {
-    currentQuiz = [...mcqs.constitution, ...mcqs.preamble, ...mcqs.union];
-  } else {
-    currentQuiz = mcqs[topic];
-  }
-  renderQuiz();
-}
+    function submitQuiz() {
+        let score = 0;
+        quizData.forEach((item, index) => {
+            const selected = document.querySelector(`input[name="q${index}"]:checked`);
+            const feedbackDiv = document.getElementById(`feedback-${index}`);
+            
+            // Clear previous styles
+            const labels = document.getElementsByName(`q${index}`);
+            labels.forEach(label => {
+                label.parentElement.style.color = 'black';
+                label.parentElement.style.fontWeight = 'normal';
+            });
 
-function renderQuiz() {
-  const area = document.getElementById('mcq-area');
-  area.innerHTML = '';
-  currentQuiz.forEach((item, idx) => {
-    const div = document.createElement('div');
-    div.className = 'question';
-    div.innerHTML = `<p><b>Q${idx+1}. ${item.q}</b></p>`;
-    const optDiv = document.createElement('div');
-    optDiv.className = 'options';
-    item.options.forEach((opt, i) => {
-      optDiv.innerHTML += `<label><input type="radio" name="q${idx}" value="${i}"> ${opt}</label>`;
-    });
-    div.appendChild(optDiv);
-    area.appendChild(div);
-  });
-}
+            if (selected) {
+                const val = parseInt(selected.value);
+                if (val === item.ans) {
+                    score++;
+                    feedbackDiv.innerHTML = "<span class='correct'>✓ Correct</span>";
+                    selected.parentElement.style.color = '#27ae60';
+                } else {
+                    feedbackDiv.innerHTML = `<span class='incorrect'>✗ Incorrect</span>. Correct answer: ${item.options[item.ans]}`;
+                    selected.parentElement.style.color = '#c0392b';
+                }
+            } else {
+                feedbackDiv.innerHTML = `<span class='incorrect'>✗ Skipped</span>. Correct answer: ${item.options[item.ans]}`;
+            }
+        });
 
-function submitQuiz() {
-  let score = 0;
-  currentQuiz.forEach((item, idx) => {
-    const selected = document.querySelector(`input[name='q${idx}']:checked`);
-    if (selected && parseInt(selected.value) === item.answer) score++;
-  });
-  document.getElementById('result').innerText = `Score: ${score} / ${currentQuiz.length}`;
-}
+        const resultDiv = document.getElementById('result');
+        const scoreDisplay = document.getElementById('score-display');
+        resultDiv.style.display = 'block';
+        scoreDisplay.textContent = `You scored ${score} out of ${quizData.length}`;
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    // Load quiz on page start
+    loadQuiz();
 </script>
+
 </body>
 </html>
